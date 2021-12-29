@@ -43,16 +43,35 @@ class Writer {
     const receipt = await this.web3.eth.sendSignedTransaction(rawData);
     return receipt.transactionHash;
   }
-  async createBackup(writerAddress, signedIpfsHash) {
+  async createData(writerAddress, signedIpfsHash) {
     const data = this.contract.methods.setBackup(
       signedIpfsHash.ipfsHash, 
-      signedIpfsHash.signature
+      signedIpfsHash.signature,
+      false
     ).encodeABI();
 
     const gasEstimate = await this.contract.methods
     .setBackup(
       signedIpfsHash.ipfsHash, 
-      signedIpfsHash.signature
+      signedIpfsHash.signature,
+      false
+    ).estimateGas({
+      from: writerAddress,
+    });
+    return await this.write(data, gasEstimate, writerAddress);
+  }
+  async createBackup(writerAddress, signedIpfsHash) {
+    const data = this.contract.methods.setBackup(
+      signedIpfsHash.ipfsHash, 
+      signedIpfsHash.signature,
+      true
+    ).encodeABI();
+
+    const gasEstimate = await this.contract.methods
+    .setBackup(
+      signedIpfsHash.ipfsHash, 
+      signedIpfsHash.signature,
+      true
     ).estimateGas({
       from: writerAddress,
     });

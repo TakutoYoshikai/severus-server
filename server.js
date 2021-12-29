@@ -41,6 +41,21 @@ app.post("/backup", (req, res) => {
   });
 });
 
+app.post("/data", (req, res) => {
+  const body = req.body;
+  writer.createData(writerAccount.address, body).then(() => {
+    console.log("success");
+    res.status(201).json({
+      message: "Successfully posted the backup.",
+    });
+  }).catch(err => {
+    console.error(err);
+    res.status(500).json({
+      message: "Internal Server Error",
+    });
+  });
+});
+
 
 if (require.main === module) {
   app.listen(config.port);
